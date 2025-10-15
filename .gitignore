@@ -2,9 +2,9 @@
 node_modules/
 
 # Env files
-.env
-.env.local
-.env.*.local
+# .env
+# .env.local
+# .env.*.local
 
 # Playwright test reports
 test-results/
