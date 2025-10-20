@@ -80,7 +80,7 @@ test.describe.serial('Работа со статьями', () => {
     await articlesPage.openArticleByTitle(title);
     await articleViewPage.clickEdit();
 
-    await articleFormPage.fillArticle({ title: updatedTitle, body: updatedBody });
+    await articleFormPage.fillArticle({ title: updatedTitle, description, body: updatedBody, tags });
 
     await expect(articleViewPage.title).toHaveText(updatedTitle);
     await expect(articleViewPage.body).toContainText(updatedBody);

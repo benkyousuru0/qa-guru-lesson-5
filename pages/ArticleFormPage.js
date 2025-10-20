@@ -10,10 +10,10 @@ class ArticleFormPage {
   }
 
   async fillArticle({ title, description, body, tags }) {
-    if (title) await this.titleInput.fill(title);
-    if (description) await this.descriptionInput.fill(description);
-    if (body) await this.bodyTextarea.fill(body);
-    if (tags) await this.tagsInput.fill(tags);
+    await this.titleInput.fill(title);
+    await this.descriptionInput.fill(description);
+    await this.bodyTextarea.fill(body);
+    await this.tagsInput.fill(tags);
     await this.publishButton.click();
   }
 
