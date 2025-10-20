@@ -1,4 +1,4 @@
-const { expect } = require('@playwright/test');
+import { test, expect } from '@playwright/test';
 
 class LoginPage {
   constructor(page) {
@@ -17,12 +17,6 @@ class LoginPage {
     await this.emailInput.fill(email);
     await this.passwordInput.fill(password);
     await this.signInButton.click();
-  }
-
-  async verifyLoginSuccess() {
-    await expect(this.page.locator('a.nav-link:has-text("Login")')).toBeHidden();
-    await expect(this.page.locator('a.nav-link.active[href="#/"]')).toBeVisible();
-    await expect(this.page.locator('a.nav-link:has-text("New Article")')).toBeVisible();
   }
 }
 

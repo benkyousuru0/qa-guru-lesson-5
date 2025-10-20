@@ -10,13 +10,10 @@ class ArticleFormPage {
   }
 
   async fillArticle({ title, description, body, tags }) {
-    if (title !== undefined) await this.titleInput.fill(title);
-    if (description !== undefined) await this.descriptionInput.fill(description);
-    if (body !== undefined) await this.bodyTextarea.fill(body);
-    if (tags !== undefined) await this.tagsInput.fill(tags);
-  }
-
-  async submit() {
+    if (title) await this.titleInput.fill(title);
+    if (description) await this.descriptionInput.fill(description);
+    if (body) await this.bodyTextarea.fill(body);
+    if (tags) await this.tagsInput.fill(tags);
     await this.publishButton.click();
   }
 
