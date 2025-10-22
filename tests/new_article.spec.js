@@ -6,7 +6,7 @@ import { test, expect } from '@playwright/test';
 import dotenv from 'dotenv';
 dotenv.config();
 
-test.describe.serial('Работа со статьями', () => {
+test.describe('Работа со статьями', () => {
   let articlesPage, articleFormPage, articleViewPage;
   let loginPage;
   let title, description, body, tags;
@@ -36,16 +36,18 @@ test.describe.serial('Работа со статьями', () => {
     await articlesPage.goto();
     await articlesPage.clickCreateArticle();
 
-    await expect(page).toHaveURL(articleFormPage.editorPageURL);
+    await expect(page).toHaveURL(articleFormPage.editorPageURL, { timeout: 15000 });
 
     await articleFormPage.fillArticle({ title, description, body, tags });
 
-    await expect(articleViewPage.title).toBeVisible();
+    await expect(articleViewPage.title).toBeVisible({ timeout: 15000 });
   });
 
   test('Проверка появления статьи в списке и просмотр', async () => {
     await articlesPage.goto();
     await articlesPage.clickGlobalFeedTab();
+
+    await expect(articlesPage.articleLinkByTitle(title).first()).toBeVisible({ timeout: 15000 });
 
     await articlesPage.openArticleByTitle(title);
 
@@ -86,19 +88,25 @@ test.describe.serial('Работа со статьями', () => {
     await expect(articleViewPage.body).toContainText(updatedBody);
   });
 
-  test.afterAll(async () => {
-    const currentUrl = page.url();
+  test('Удаление статьи', async () => {
+    const currentUrl = page.url();  
     if (!currentUrl.includes('/article/')) {
       await articlesPage.goto();
       await articlesPage.openArticleByTitle(updatedTitle || title);
     }
 
     await articleViewPage.clickDelete();
-    await page.waitForURL(/#\/$/); 
+    await page.waitForURL(/#\/$/);
     await expect(page).toHaveURL(/#\/$/);
 
     await articlesPage.assertTitleNotExist(updatedTitle, title);
-  
+  });
+
+  test.afterAll(async () => {
+    const count = await articlesPage.countArticlesByTitle(updatedTitle || title);
+    if (count !== 0) {
+      throw new Error(`Статья с названием "${updatedTitle || title}" всё ещё присутствует`);
+    }
     await page.close();
   });
 });

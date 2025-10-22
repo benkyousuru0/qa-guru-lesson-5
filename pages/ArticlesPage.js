@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { expect } from '@playwright/test';
 
 class ArticlesPage {
   constructor(page) {
@@ -7,6 +7,10 @@ class ArticlesPage {
     this.baseUrl = "https://realworld.qa.guru/#/";
     this.createArticleButton = page.locator('a.nav-link:has-text("New Article")'); 
     this.globalFeedTab = page.locator('.feed-toggle button.nav-link', { hasText: 'Global Feed' });
+
+    this.articleLinkByTitle = (title) => page.locator(`.article-preview >> text=${title}`);
+    this.articleLinkByText = (text) => page.locator(`.article-preview:has-text("${text}")`);
+    this.favoriteButtonByTitle = (title) => page.locator(`.article-preview:has-text("${title}") button.btn`);
   }
 
   async goto() {
@@ -22,39 +26,40 @@ class ArticlesPage {
   }
 
   async openArticleByTitle(title) {
-    const articleLink = this.page.locator(`.article-preview >> text=${title}`);
-    await expect(articleLink.first()).toBeVisible({ timeout: 15000 });
-    await expect(articleLink).toBeVisible()
-    await articleLink.first().click();
+    await this.articleLinkByTitle(title).first().click();
   }
 
+  async countArticlesByTitle(title) {
+    const locator = this.articleLinkByText(title);
+    return await locator.count();
+  }
+  
   async assertTitleNotExist(updatedTitle, title) {
-    this.articleLink = this.page.locator(`.article-preview:has-text("${updatedTitle || title}")`);
-    await expect(this.articleLink).toHaveCount(0);
+    const count = await this.countArticlesByTitle(updatedTitle || title);
+    expect(count).toBe(0);
   }
 
   favoriteButtonForArticle(title) {
-    return this.page.locator(`.article-preview:has-text("${title}") button.btn`);
+    return this.favoriteButtonByTitle(title);
   }
 
   async isArticleFavorited(title) {
-    const button = this.favoriteButtonForArticle(title).first();
+    const button = this.favoriteButtonByTitle(title).first();
     const className = await button.getAttribute('class');
     return className?.includes('active');
   }
 
-async toggleFavorite(title) {
-  const favoriteButton = this.favoriteButtonForArticle(title).first();
-  const wasActive = (await favoriteButton.getAttribute('class'))?.includes('active');
-  await favoriteButton.click();
+  async toggleFavorite(title) {
+    const favoriteButton = this.favoriteButtonByTitle(title).first();
+    const wasActive = (await favoriteButton.getAttribute('class'))?.includes('active');
+    await favoriteButton.click();
 
-  if (wasActive) {
-    await expect(favoriteButton).not.toHaveClass(/active/, { timeout: 5000 });
-  } else {
-    await expect(favoriteButton).toHaveClass(/active/, { timeout: 5000 });
+    if (wasActive) {
+      await expect(favoriteButton).not.toHaveClass(/active/);
+    } else {
+      await expect(favoriteButton).toHaveClass(/active/);
+    }
   }
-}
-
 }
 
 module.exports = ArticlesPage;
