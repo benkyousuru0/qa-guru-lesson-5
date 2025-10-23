@@ -36,18 +36,18 @@ test.describe('Работа со статьями', () => {
     await articlesPage.goto();
     await articlesPage.clickCreateArticle();
 
-    await expect(page).toHaveURL(articleFormPage.editorPageURL, { timeout: 15000 });
+    await expect(page).toHaveURL(articleFormPage.editorPageURL);
 
     await articleFormPage.fillArticle({ title, description, body, tags });
 
-    await expect(articleViewPage.title).toBeVisible({ timeout: 15000 });
+    await expect(articleViewPage.title).toBeVisible();
   });
 
   test('Проверка появления статьи в списке и просмотр', async () => {
     await articlesPage.goto();
     await articlesPage.clickGlobalFeedTab();
 
-    await expect(articlesPage.articleLinkByTitle(title).first()).toBeVisible({ timeout: 15000 });
+    await expect(articlesPage.articleLinkByTitle(title).first()).toBeVisible();
 
     await articlesPage.openArticleByTitle(title);
 
